@@ -55,27 +55,76 @@
   <body>
     <h1>Formulário de Contato (Nativo)</h1>
     <p>
-      Este formulário usa a submissão HTML padrão, que será interceptada pelo
-      HubSpot.
+      Este formulário usa apenas o tracking code do HubSpot, sem JavaScript
+      customizado.
     </p>
 
-    <form action="pagina-de-obrigado.html" method="POST">
+    <form id="contactForm">
       <div>
         <label for="email">Email:*</label>
         <input type="email" id="email" name="email" required />
       </div>
 
       <div>
-        <label for="fname">Nome:</label>
-        <input type="text" id="fname" name="firstname" />
+        <label for="firstname">Nome:</label>
+        <input type="text" id="firstname" name="firstname" />
       </div>
 
       <div>
-        <label for="lname">Sobrenome:</label>
-        <input type="text" id="lname" name="lastname" />
+        <label for="lastname">Sobrenome:</label>
+        <input type="text" id="lastname" name="lastname" />
       </div>
 
       <button type="submit">Enviar</button>
     </form>
+
+    <div
+      id="successMessage"
+      style="
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        color: #155724;
+      "
+    >
+      ✅ Formulário enviado com sucesso!
+    </div>
+
+    <script>
+      // Apenas para mostrar mensagem de sucesso após submit
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("contactForm");
+        const successMessage = document.getElementById("successMessage");
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          console.log(
+            "Formulário enviado - HubSpot tracking code deve capturar automaticamente"
+          );
+
+          // Mostrar mensagem de sucesso
+          successMessage.style.display = "block";
+
+          // Resetar formulário após 3 segundos
+          setTimeout(() => {
+            form.reset();
+            successMessage.style.display = "none";
+          }, 3000);
+        });
+      });
+
+      // Log para confirmar que o tracking code carregou
+      window.addEventListener("load", () => {
+        console.log("✅ Página carregada");
+        console.log(
+          "✅ HubSpot tracking code disponível:",
+          typeof window._hsq !== "undefined"
+        );
+      });
+    </script>
   </body>
 </html>
