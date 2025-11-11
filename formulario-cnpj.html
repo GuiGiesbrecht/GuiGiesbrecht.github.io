@@ -403,16 +403,17 @@
       
       // Função para preencher o formulário com os dados
       function preencherFormulario(data) {
-        // Converter data americana para brasileira
-        let dataFundacao = data.founded;
-        if (dataFundacao) {
-          dataFundacao = dataFundacao.split('-').reverse().join('/');
+        // Converter data americana para brasileira (para exibição)
+        let dataFundacaoDisplay = data.founded;
+        if (dataFundacaoDisplay) {
+          dataFundacaoDisplay = dataFundacaoDisplay.split('-').reverse().join('/');
         }
         
         // Preencher campos
         document.getElementById('razaoSocial').value = data.company.name || '';
         document.getElementById('nomeFantasia').value = data.alias || '';
-        document.getElementById('dataFundacao').value = dataFundacao || '';
+        document.getElementById('dataFundacao').value = dataFundacaoDisplay || '';
+        document.getElementById('dataFundacao').setAttribute('data-iso-date', data.founded || ''); // Guardar data ISO original
         document.getElementById('cep').value = data.address.zip || '';
         document.getElementById('endereco').value = data.address.street || '';
         document.getElementById('municipio').value = data.address.city || '';
@@ -438,13 +439,23 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
         
+        // Obter data ISO do atributo data (guardado durante o preenchimento)
+        const dataFundacaoISO = document.getElementById('dataFundacao').getAttribute('data-iso-date');
+        
+        // Converter data ISO para timestamp em milissegundos (formato esperado pelo HubSpot Date Picker)
+        let dataFundacaoTimestamp = '';
+        if (dataFundacaoISO) {
+          const date = new Date(dataFundacaoISO);
+          dataFundacaoTimestamp = date.getTime().toString(); // Timestamp em milissegundos
+        }
+        
         // Coletar dados do formulário
         const formData = {
           fields: [
             { name: 'cnpj', value: document.getElementById('cnpj').value },
             { name: 'razao_social', value: document.getElementById('razaoSocial').value },
             { name: 'nome_fantasia', value: document.getElementById('nomeFantasia').value },
-            { name: 'data_fundacao', value: document.getElementById('dataFundacao').value },
+            { name: 'data_fundacao', value: dataFundacaoTimestamp }, // Enviar como timestamp
             { name: 'inscricao_estadual', value: document.getElementById('inscricaoEstadual').value },
             { name: 'address', value: document.getElementById('endereco').value },
             { name: 'city', value: document.getElementById('municipio').value },
